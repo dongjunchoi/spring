@@ -34,3 +34,51 @@ http(jsp)처리 / ajax처리 시 차이점 -> 화면 깜빡임이
 	
 ajax ==> json으로만 응답 x
 ajax ==> xml, html...
+
+
+==================================================================================================
+
+AOP(Aspect Oriented Programing) : 여러 클래스로 분산된 책입(기능)을 별도의 관점으로 분리/캡슐화 하는 프로그래밍 방법 ==> 관점지향 프로그래밍
+OOP(Object Oriented Programing) : 객체 지향 프로그래밍은 컴퓨터 프로그램을 명령어의 목록으로 보는 시각에서 벗어나 여러 개의 독립된 단위, 즉 "객체"들의 모임으로 파악하고자 하는 것 ==> 객체지향 프로그래밍
+
+	. class에서 핵심기능(SQL, business logic)과 부가기능(db connection)혼재 -> OOP : 하나의 클래스는 하나의 관심사에 집중
+	. 순수 OOP에서는 핵심기능과 부가기능을 분리하기 어렵다 -> AOP의 필요 배경
+	. AOP는 OOPfmf "대체"하는 개념이 아닌 "보완"하는 개념
+	
+	
+용어
+	. Aspect : 여러 객체에 공통으로 적용되는 관심사항
+	. Advice : 공통 관심 기능을 언제 핵심 로직에 적용할지 정의 (ex: 메소드 호출 전에 공통 관심 기능을 호출한다)
+	. JoinPoint : Advice가 적용될 시점/지점(메소드)
+	. PointCut : joinpoint의 식별을 정의(어떤 메소드에....)
+	. Weaving : Advice(Aspect)를 핵심 로직 코드에 삽입하는 것
+			
+			pointcut -- ==> 핵심로직 실행전(before)
+					  |
+			핵심 로직	  | ==> JoinPoint
+					  |
+			pointcut -- ==> 핵심로직 실행후(after)
+	
+	. Advisor : Advice를 지칭(spring aop에서만 사용하는 개념)
+	. Proxy : 핵심 기능을 구현한 객체에 advice가 적용된 객체
+	
+
+ddit.board.service.*Service.*(..)
+	==> ddit.board.service.UserService.*
+	* : 마스킹 문자(모든)
+==> ddit.board.service 패키지내에 존재하는 클래스중 Service로 끝나는 클래스들의 모든 메소드(인자 관계없음)
+
+
+Filter / Aop / Interceptor 비교
+	. Filter
+		. spring container에 포함되지 않음 -> 기본 설정에서는 Dl 활용 불가(DelegatingFilterProxy 필터를 이용하면 가능)
+	. AOP
+		. 범용적
+		. 일시적인 설정 보다는ㄴ 어플리케이션 전반에 대한 설정에 적합
+	. Interceptor
+		. Dl 가능 / 설정 간단
+		. 요청에 대한 전후 처리에 적당
+			. 컨트롤러 실행전(preHandle)
+			. 컨트롤러 실행 후(PostHandle)
+			. 뷰를 실행한 이후(afterCompletion)
+			
