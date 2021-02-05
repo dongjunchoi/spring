@@ -29,6 +29,7 @@
 
 		<li class="active"><a href="${cp }/user/allUserTiles">전체 사용자(Tiles)</a></li>
 		<li class="active"><a href="${cp }/user/pagingUserTiles">사용자 페이징 리스트(Tiles)</a></li>
+		<li class="active"><a href="${cp }/user/pagingUserAjaxView">사용자 페이징 리스트(Ajax)</a></li>
 
 		
 	</ul>

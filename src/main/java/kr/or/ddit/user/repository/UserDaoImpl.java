@@ -27,7 +27,6 @@ public class UserDaoImpl implements UserDao{
 	
 	@Override
 	public UserVo selectUser(String userid) {
-		
 		return template.selectOne("users.selectUser", userid);
 	}
 

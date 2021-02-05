@@ -229,7 +229,7 @@ public class UserController {
 	
 	
 //----------------------Tiles 방식------------------------------------------------------
-	//페이징
+	//페이징Tiles
 	@RequestMapping("pagingUserTiles")
 	public String pagingUserTiles(@RequestParam(defaultValue = "1") int page,
 							 	  @RequestParam(defaultValue = "5") int pageSize,
@@ -243,12 +243,99 @@ public class UserController {
 		return "tiles.user.pagingUser";
 	}
 	
+	//사용자 리스트가 없는 상태의 화면만 응답으로 생성
+	@RequestMapping("pagingUserAjaxView")
+	public String pagingUserAjaxView() {
+		return "tiles.user.pagingUserAjax";
+	}
+	
+	//페이징Ajax
+	@RequestMapping("pagingUserAjax")
+	public String pagingUserAjax(@RequestParam(defaultValue = "1") int page,
+			@RequestParam(defaultValue = "5") int pageSize,
+			Model model) {
+		
+		PageVo pageVo = new PageVo(page, pageSize);
+		
+		model.addAllAttributes(userService.selectPagingUser(pageVo));
+		
+		return "jsonView";
+	}
+	
+	//페이징AjaxHtml
+	@RequestMapping("pagingUserAjaxHtml")
+	public String pagingUserAjaxHtml(@RequestParam(defaultValue = "1") int page,
+									@RequestParam(defaultValue = "5") int pageSize,
+									Model model) {
+		
+		PageVo pageVo = new PageVo(page, pageSize);
+		
+		model.addAllAttributes(userService.selectPagingUser(pageVo));
+		
+		return "/user/pagingUserAjaxHtml";
+		/*
+		 * 	pagingUserAjaxHtml ==> /WEB-INF/views/user/pagingUserAjaxHtml.jsp
+		 */
+	}
+	
 	//전체유저
 	@RequestMapping("allUserTiles")
 	private String allUserTiles(Model model) {
 		model.addAttribute("userList", userService.selectAllUser());
 		return "tiles.user.allUser";
 				
+	}
+	//사용자 정보 수정 페이지
+	@RequestMapping(path="userModifyTiles", method={RequestMethod.GET})
+	private String userModifyTiles(Model model, String userid) {
+		model.addAttribute("user",userService.selectUser(userid));
+		return "tiles.user.userModify";
+	}
+		
+	//사용자 정보 수정
+	@RequestMapping(path="userModifyTiles", method=RequestMethod.POST)
+	public String userModifyTiles(UserVo userVo, Model model, RedirectAttributes ra, MultipartFile profile) {
+			
+		if("".equals(profile.getOriginalFilename())) {
+			userVo.setFilename(userVo.getFilename());
+			userVo.setRealfilename(userVo.getRealfilename());
+			
+			if(userVo.getFilename()==null) {
+				userVo.setFilename("");
+			}
+			if(userVo.getRealfilename()==null) {
+				userVo.setRealfilename("");
+			}
+			
+		}else {
+			try {
+				userVo.setFilename(profile.getOriginalFilename());
+				String fileExtension = FileUtil.getFileExtension(profile.getOriginalFilename());
+				String realFileName = UUID.randomUUID().toString()+fileExtension;
+				userVo.setRealfilename(realFileName);
+				profile.transferTo(new File("D:/upload/"+realFileName));
+			} catch (IllegalStateException | IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+			
+		int updateCnt = 0;
+		try {
+			updateCnt = userService.modifyUser(userVo);
+		} catch (Exception e) {
+			updateCnt =0;
+		}
+		// 사용자 수정이 정상적으로 된 경우 ==> 해당 사용자의 상세 조회 페이지로 이동
+		if(updateCnt == 1) {
+			ra.addAttribute("userid", userVo.getUserid());
+			return "redirect:/user/detailUserTiles";
+		}
+		// 사용자 수정이 비정상적으로 된 경우 ==> 해당 사용자의 정보 수정 페이지로 이동
+		else {
+			model.addAttribute("user", userVo);
+			return "tiles.user.userModify";
+		}
+			
 	}
 	
 	// 사용자 등록 페이지
