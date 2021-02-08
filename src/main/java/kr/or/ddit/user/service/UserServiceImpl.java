@@ -70,6 +70,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public int registUser(UserVo userVo) {
 		return userDao.registUser(userVo);
+//		
+		//예외발생
+//		userDao.registUser(userVo);
+//		userDao.registUser(userVo);
+//		return 1;
 	}
 
 	@Override
